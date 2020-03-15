@@ -15,6 +15,7 @@ class MyDrive:
         self.drive = GoogleDrive(self.gauth)
         
     def __connect(self, ar_cred_file, ar_secret_file):
+        
         credFile = ar_cred_file
         secFile = ar_secret_file
         exitValue = None
@@ -42,14 +43,15 @@ class MyDrive:
 
         return gauth
 
-    def ls(self, ar_path_id="'root'"):
+    def ls(self, ar_path_id="root", verbose=False):
 
         try:
             fileList = self.drive.ListFile(
-                {'q': "{} in parents and trashed=false".format(ar_path_id)}
+                {'q': "'{}' in parents and trashed=false".format(ar_path_id)}
                 ).GetList()
-            for file in fileList:
-                print('Title: %s, ID: %s' % (file['title'], file['id']))
+            if verbose:
+                for file in fileList:
+                    print('Title: %s, ID: %s' % (file['title'], file['id']))
             exitValue = self.cts.OK
         except Exception as exc:
             print(str(exc))
@@ -89,6 +91,22 @@ class MyDrive:
 
         return exitValue
             
+    def get(self, ar_path_id, ar_id):
+
+        exitValue = None
+        content = None
+        try:
+            file = self.drive.CreateFile({"id": ar_id,
+                                        "parents":[{
+                                        "kind": "drive#fileLink",
+                                        "id": ar_path_id}]})
+            content = file.GetContentString()
+            exitValue = self.cts.OK
+        except Exception as exc:
+            print(str(exc))
+            exitValue = self.cts.ERROR
+
+        return content, exitValue
 
     def put(self, ar_file_path, ar_name, ar_path_id='root'):
 
@@ -123,6 +141,7 @@ class MyDrive:
         except Exception as exc:
             print(str(exc))
             exitValue = self.cts.ERROR
+
     def rm_per(self, ar_id, ar_path_id='root'):
 
         exitValue = None

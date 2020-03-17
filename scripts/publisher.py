@@ -22,8 +22,8 @@ for folder in folders.keys():
             if file['mimeType'] != 'application/vnd.google-apps.folder':
 
                 taskManager = TaskManager(
-                    title = file['title'],
                     id = file['id'],
+                    title = file['title'],
                     source = folder[0], 
                     destiny = folder[1],
                     fails=False,

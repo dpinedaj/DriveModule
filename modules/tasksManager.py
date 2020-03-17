@@ -15,9 +15,11 @@ from libraries.constants import Constants as cts
 class TaskManager(Base):
 
     __tablename__ = 'tasks_manager'
-
-    id = Column(Integer, primary_key=True)
-    file_name = Column(String)
+    
+    id = Column(String)
+    title = Column(String)
+    source = Column(String)
+    destroy = Column(String)
     fails = Column(Boolean)
     processing = Column(Boolean)
     error = Column(String)

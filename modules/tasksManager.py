@@ -1,4 +1,5 @@
-
+import sys
+import os
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, Boolean
@@ -15,11 +16,11 @@ from libraries.constants import Constants as cts
 class TaskManager(Base):
 
     __tablename__ = 'tasks_manager'
-    
+    pid = Column(Integer, primary_key=True)
     id = Column(String)
     title = Column(String)
     source = Column(String)
-    destroy = Column(String)
+    destiny = Column(String)
     fails = Column(Boolean)
     processing = Column(Boolean)
     error = Column(String)
@@ -29,8 +30,8 @@ class TaskManager(Base):
         query = """
             UPDATE %s SET
                 processing = true
-            WHERE id = (
-                SELECT id   
+            WHERE pid = (
+                SELECT pid   
                 FROM %s
                 WHERE processing = false
                 AND 
@@ -73,10 +74,13 @@ class TaskManager(Base):
         session.commit()
 
     def __repr__(self):
-        return "%s(id=%s, fn=%s, proc=%s, fail=%s, error=%s)" % (
+        return "%s(pid=%s, id=%s, t=%s, src=%s, dst=%s, proc=%s, fail=%s, error=%s)" % (
             self.__class__.__name__,
+            self.pid,
             self.id,
-            self.file_name,
+            self.title,
+            self.source,
+            self.destiny,
             self.processing,
             self.fails,
             self.error

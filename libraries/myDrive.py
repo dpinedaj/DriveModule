@@ -88,6 +88,17 @@ class MyDrive:
 
         return fileList
     
+    def check(self, ar_path_id, ar_file_name):
+        exists = False
+        try:
+            for file in self.ls(ar_path_id):
+                if file['title'] == ar_file_name:
+                    exists = True
+        except Exception as exc:
+            print(str(exc))
+        return exists
+
+
     def echo(self, ar_content, ar_name, ar_path_id='root'):
 
         exitValue = None
@@ -206,22 +217,34 @@ class MyDrive:
     def mkdir(self, ar_name, ar_path_id='root'):
         
         exitValue = None
+        exists = False
+
         metaData = {"title": ar_name,
                     "parents": [{"id": ar_path_id}],
                     "mimeType": "application/vnd.google-apps.folder"}
 
         try:
-            folder = self.drive.CreateFile(metaData)
-            folder.Upload()
+            for folder in self.ls(ar_path_id):
+                if folder['title'] == ar_name:
+                    exists = True
+                    folderId = folder['id']
+
+            if not exists:
+                folder = self.drive.CreateFile(metaData)
+                folder.Upload()
+                folderId = folder['id']
+                print('folder created: {}'.format(folder['title']))
+
             exitValue = self.cts.OK
         except Exception as exc:
             print(str(exc))
             exitValue = self.cts.ERROR
 
-        return folder['id'], exitValue 
+        return folderId, exitValue 
 
-    def mv(self):
-        pass
+
+
+    def mv(self, ar_path_src, ar_path_dst, ar_file_id, ar_file_name):
     #TODO implement mv function
 
 
